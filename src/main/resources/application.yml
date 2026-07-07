@@ -2,6 +2,22 @@ spring:
   application:
     name: library-management
 
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/library_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 server:
   port: 8080
 
@@ -17,3 +33,4 @@ management:
 logging:
   level:
     com.library.management: INFO
+    org.hibernate.SQL: DEBUG
