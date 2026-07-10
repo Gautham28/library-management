@@ -28,6 +28,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Jakarta Validation: @NotBlank, @Min, @Valid, etc. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- Health checks & app metrics (e.g. GET /actuator/health) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
