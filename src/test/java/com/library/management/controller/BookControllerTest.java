@@ -6,11 +6,13 @@ import com.library.management.dto.response.BookResponseDTO;
 import com.library.management.dto.response.PagedResponse;
 import com.library.management.enums.BookStatus;
 import com.library.management.exception.BookNotFoundException;
+import com.library.management.exception.GlobalExceptionHandler;
 import com.library.management.service.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookController.class)
+@Import(GlobalExceptionHandler.class)
 class BookControllerTest {
 
     @Autowired
@@ -151,16 +154,14 @@ class BookControllerTest {
     }
 
     @Test
-    void shouldSurfaceBookNotFoundExceptionUntilGlobalHandlerExists() throws Exception {
+    void shouldReturn404WhenBookNotFound() throws Exception {
         when(bookService.getBookById(99L)).thenThrow(new BookNotFoundException(99L));
 
-        // Phase 7 will map this to HTTP 404 via @ControllerAdvice.
-        // Without it, the exception bubbles out of the dispatcher.
-        org.assertj.core.api.Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(get("/api/v1/books/99"))
-                )
-                .hasCauseInstanceOf(BookNotFoundException.class)
-                .hasMessageContaining("99");
+        mockMvc.perform(get("/api/v1/books/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Book not found with id: 99"));
     }
 
     private BookRequestDTO validRequest() {
